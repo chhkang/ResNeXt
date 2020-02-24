@@ -3,11 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 class Block(nn.Module):
     def __init__(self,inchannel,interchannel,outchannel):
+        super(Block,self).__init__()
         self.conv1 = nn.Conv2d(inchannel,interchannel,kernel_size=1, groups=32)
         self.bn1 = nn.BatchNorm2d(interchannel)
         self.conv2 = nn.Conv2d(interchannel,interchannel,kernel_size=3,padding=1,groups=32)
         self.bn2 = nn.BatchNorm2d(interchannel)
-        self.conv3 = nn.Conv2d(interchannel,outchannel,kernel_sizie=1, groups=32)
+        self.conv3 = nn.Conv2d(interchannel,outchannel,kernel_size=1, groups=32)
         self.bn3 = nn.BatchNorm2d(outchannel)
     def forward(self,x):
         out = self.conv1(x)
@@ -16,13 +17,13 @@ class Block(nn.Module):
         out = F.relu(self.bn2(out))
         out = self.conv3(out)
         out = F.relu(self.bn3(out))
-        out = F.relu(torch.cat(x,out))
+        out = torch.cat([x, out], dim=0)
         return out
 
 class ResNeXt(nn.Module):
     def __init__(self):
         super(ResNeXt,self).__init__()
-        self.conv1 = nn.Conv2d(3,64,padding=1)
+        self.conv1 = nn.Conv2d(3,64,kernel_size=3, padding=1)
         self.bn1 = nn.BatchNorm2d(64)
         self.layer = self._make_layer_([[64,128,256],[256,256,512],[512,512,1024]])
         # weight initialization
