@@ -17,7 +17,7 @@ class Block(nn.Module):
         out = F.relu(self.bn2(out))
         out = self.conv3(out)
         out = F.relu(self.bn3(out))
-        out = torch.cat([x, out], dim=0)
+        out = x+out
         return out
 
 class ResNeXt(nn.Module):
@@ -26,6 +26,7 @@ class ResNeXt(nn.Module):
         self.conv1 = nn.Conv2d(3,64,kernel_size=3, padding=1)
         self.bn1 = nn.BatchNorm2d(64)
         self.layer = self._make_layer_([[64,128,256],[256,256,512],[512,512,1024]])
+
         # weight initialization
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -38,13 +39,14 @@ class ResNeXt(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.zeros_(m.bias)
+
         self.avgpool = nn.AvgPool2d(4,1,ceil_mode=True)
-        self.linear = nn.Linear(1024,100)
+        self.linear = nn.Linear(1024, 100)
     def _make_layer_(self,params):
         list = []
-        for j in range(3):
+        for param in params:
             for i in range(3):
-                list.append(Block(params[j][0],params[j][1],params[j][2]))
+                list.append(Block(param[0],param[1],param[2]))
         return nn.Sequential(*list)
     def forward(self,x):
         out = self.conv1(x)
