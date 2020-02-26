@@ -10,15 +10,22 @@ class Block(nn.Module):
         self.bn2 = nn.BatchNorm2d(interchannel)
         self.conv3 = nn.Conv2d(interchannel,outchannel,kernel_size=1, groups=32)
         self.bn3 = nn.BatchNorm2d(outchannel)
+        self.shortcut = nn.Sequential()
+        if inchannel != outchannel:
+            self.shortcut.add_module('shortcut_conv',nn.Conv2d(inchannel, outchannel, kernel_size=1, padding=0,bias=False))
+            self.shortcut.add_module('shortcut_bn', nn.BatchNorm2d(outchannel))
     def forward(self,x):
+        residual = self.shortcut(x)
+
         out = self.conv1(x)
-        out = F.relu(self.bn1(out))
+        out = F.relu(self.bn1(out), inplace=True)
+
         out = self.conv2(out)
-        out = F.relu(self.bn2(out))
+        out = F.relu(self.bn2(out), inplace=True)
         out = self.conv3(out)
-        out = F.relu(self.bn3(out))
-        out = x+out
-        return out
+        out = self.bn3(out)
+
+        return F.relu(residual+out, inplace=True)
 
 class ResNeXt(nn.Module):
     def __init__(self):
