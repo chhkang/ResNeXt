@@ -35,16 +35,15 @@ def load_model(model, ckpt_file, args):
 
 
 def save_model(state, epoch, is_best, args):
-    if(epoch%5==0):
-      dir_ckpt = pathlib.Path('checkpoint')
-      dir_path = dir_ckpt / args.dataset
-      dir_path.mkdir(parents=True, exist_ok=True)
+    dir_ckpt = pathlib.Path('checkpoint')
+    dir_path = dir_ckpt / args.dataset
+    dir_path.mkdir(parents=True, exist_ok=True)
 
-      model_file = dir_path / 'ckpt_epoch_{}.pth'.format(epoch)
-      torch.save(state, model_file)
+    model_file = dir_path / 'ckpt_epoch_{}.pth'.format(epoch)
+    torch.save(state, model_file)
 
-      if is_best:
-          shutil.copyfile(model_file, dir_path / 'ckpt_best.pth')
+    if is_best:
+        shutil.copyfile(model_file, dir_path / 'ckpt_best.pth')
 
 def load_acc():
     f = open("accuracy.txt", 'r')
@@ -52,6 +51,7 @@ def load_acc():
     top1 = list(map(float, lines[0].split()))
     top5 = list(map(float, lines[1].split()))
     epoch = list(map(int, lines[2].split()))
+    f.close()
     return top1,top5,epoch
 
 
@@ -65,8 +65,8 @@ def save_acc(top1,top5,epoch):
     f.write(top5)
     f.write('\n')
     f.write(epoch)
-
     f.close()
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self, name, fmt=':f'):

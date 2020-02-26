@@ -141,11 +141,14 @@ def main():
         state = {'epoch': epoch + 1,
                  'model': model.state_dict(),
                  'optimizer': optimizer.state_dict()}
-        save_model(state, epoch, is_best, args)
         list_Acc1.append(acc1_valid.item())
         list_Acc5.append(acc5_valid.item())
         list_epoch.append(epoch)
-    save_acc(list_Acc1,list_Acc5,list_epoch)
+
+        if(epoch%5 == 0):
+            save_model(state, epoch, is_best, args)
+            save_acc(list_Acc1, list_Acc5, list_epoch)
+
     avg_train_time = train_time / (args.epochs-start_epoch)
     avg_valid_time = validate_time / (args.epochs-start_epoch)
     total_train_time = train_time + validate_time
