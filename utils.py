@@ -49,9 +49,6 @@ def save_model(state, epoch, is_best, args):
 def load_acc():
     f = open("accuracy.txt", 'r')
     lines = f.readlines()
-    top1 = []
-    top5 = []
-    epoch = []
     top1 = list(map(float, lines[0].split()))
     top5 = list(map(float, lines[1].split()))
     epoch = list(map(int, lines[2].split()))
