@@ -4,16 +4,15 @@ import torch.nn.functional as F
 class Block(nn.Module):
     def __init__(self,inchannel,interchannel,outchannel):
         super(Block,self).__init__()
-        self.conv1 = nn.Conv2d(inchannel,interchannel,kernel_size=1, groups=32)
+        self.conv1 = nn.Conv2d(inchannel,interchannel,kernel_size=1)
         self.bn1 = nn.BatchNorm2d(interchannel)
         self.conv2 = nn.Conv2d(interchannel,interchannel,kernel_size=3,padding=1,groups=32)
         self.bn2 = nn.BatchNorm2d(interchannel)
-        self.conv3 = nn.Conv2d(interchannel,outchannel,kernel_size=1, groups=32)
+        self.conv3 = nn.Conv2d(interchannel,outchannel,kernel_size=1)
         self.bn3 = nn.BatchNorm2d(outchannel)
         self.shortcut = nn.Sequential()
-        if inchannel != outchannel:
-            self.shortcut.add_module('shortcut_conv',nn.Conv2d(inchannel, outchannel, kernel_size=1, padding=0,bias=False))
-            self.shortcut.add_module('shortcut_bn', nn.BatchNorm2d(outchannel))
+        self.shortcut.add_module('shortcut_conv',nn.Conv2d(inchannel, outchannel, kernel_size=1, padding=0,bias=False))
+        self.shortcut.add_module('shortcut_bn', nn.BatchNorm2d(outchannel))
     def forward(self,x):
         residual = self.shortcut(x)
 
@@ -52,8 +51,9 @@ class ResNeXt(nn.Module):
     def _make_layer_(self,params):
         list = []
         for param in params:
-            for i in range(3):
-                list.append(Block(param[0],param[1],param[2]))
+            list.append(Block(param[0],param[1],param[2]))
+            for i in range(2):
+                list.append(Block(param[2],param[1],param[2]))
         return nn.Sequential(*list)
     def forward(self,x):
         out = self.conv1(x)
