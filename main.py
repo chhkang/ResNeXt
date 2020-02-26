@@ -56,6 +56,10 @@ def main():
     ckpt_dir = pathlib.Path('checkpoint')
     ckpt_file = ckpt_dir / args.dataset / args.ckpt
 
+    list_Acc1 = []
+    list_Acc5 = []
+    list_epoch = []
+
     # for resuming training
     if args.resume:
         if isfile(ckpt_file):
@@ -68,9 +72,10 @@ def main():
             print('==> Loaded Checkpoint \'{}\' (epoch {})'.format(
                 args.ckpt, start_epoch))
         else:
-            print('==> no checkpoint found \'{}\''.format(
-                args.ckpt))
+            print('==> no checkpoint found \'{}\''.format(args.ckpt))
             return
+
+        list_Acc1, list_Acc5, list_epoch = load_acc()
 
     # Data loading
     print('\n==> Load data..')
@@ -104,9 +109,7 @@ def main():
     train_time = 0.0
     validate_time = 0.0
     lr = args.lr
-    list_Acc1 = []
-    list_Acc5 = []
-    list_epoch = []
+
     for epoch in range(start_epoch, args.epochs):
         adjust_learning_rate(optimizer, epoch, lr)
         print('\n==> Epoch: {}, lr = {}'.format(
