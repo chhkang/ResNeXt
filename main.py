@@ -69,14 +69,17 @@ def main():
             start_epoch = checkpoint['epoch']
             optimizer.load_state_dict(checkpoint['optimizer'])
 
+            list_Acc1, list_Acc5, list_epoch = load_acc()
+            list_Acc1 = list_Acc1[0:start_epoch]
+            list_Acc5 = list_Acc5[0:start_epoch]
+            list_epoch = list_epoch[0:start_epoch]
+            print(list_Acc1, list_Acc5, list_epoch)
+
             print('==> Loaded Checkpoint \'{}\' (epoch {})'.format(
                 args.ckpt, start_epoch))
         else:
             print('==> no checkpoint found \'{}\''.format(args.ckpt))
             return
-
-        list_Acc1, list_Acc5, list_epoch = load_acc()
-
     # Data loading
     print('\n==> Load data..')
     train_loader, val_loader = DataLoader(args.batch_size, args.workers,
@@ -119,8 +122,8 @@ def main():
         print('===> [ Training ]')
         start_time = time.time()
         acc1_train, acc5_train = train(train_loader,
-            epoch=epoch, model=model,
-            criterion=criterion, optimizer=optimizer)
+                                       epoch=epoch, model=model,
+                                       criterion=criterion, optimizer=optimizer)
         elapsed_time = time.time() - start_time
         train_time += elapsed_time
         print('====> {:.2f} seconds to train this epoch\n'.format(
@@ -145,23 +148,24 @@ def main():
         list_Acc5.append(acc5_valid.item())
         list_epoch.append(epoch)
 
-        if(epoch%5 == 0):
+        if (epoch % 5 == 0):
             save_model(state, epoch, is_best, args)
+        if (epoch % 5 == 4):
             save_acc(list_Acc1, list_Acc5, list_epoch)
 
-    avg_train_time = train_time / (args.epochs-start_epoch)
-    avg_valid_time = validate_time / (args.epochs-start_epoch)
+    avg_train_time = train_time / (args.epochs - start_epoch)
+    avg_valid_time = validate_time / (args.epochs - start_epoch)
     total_train_time = train_time + validate_time
     print('====> average training time per epoch: {:,}m {:.2f}s'.format(
-        int(avg_train_time//60), avg_train_time%60))
+        int(avg_train_time // 60), avg_train_time % 60))
     print('====> average validation time per epoch: {:,}m {:.2f}s'.format(
-        int(avg_valid_time//60), avg_valid_time%60))
+        int(avg_valid_time // 60), avg_valid_time % 60))
     print('====> training time: {}h {}m {:.2f}s'.format(
-        int(train_time//3600), int((train_time%3600)//60), train_time%60))
+        int(train_time // 3600), int((train_time % 3600) // 60), train_time % 60))
     print('====> validation time: {}h {}m {:.2f}s'.format(
-        int(validate_time//3600), int((validate_time%3600)//60), validate_time%60))
+        int(validate_time // 3600), int((validate_time % 3600) // 60), validate_time % 60))
     print('====> total training time: {}h {}m {:.2f}s'.format(
-        int(total_train_time//3600), int((total_train_time%3600)//60), total_train_time%60))
+        int(total_train_time // 3600), int((total_train_time % 3600) // 60), total_train_time % 60))
 
 
 def train(train_loader, **kwargs):
@@ -208,7 +212,8 @@ def train(train_loader, **kwargs):
         batch_time.update(time.time() - end)
 
         if i % args.print_freq == 0:
-            progress.print(i)
+            progress.
+            print(i)
 
         end = time.time()
 
@@ -248,7 +253,8 @@ def validate(val_loader, model, criterion):
             batch_time.update(time.time() - end)
 
             if i % args.print_freq == 0:
-                progress.print(i)
+                progress.
+                print(i)
 
             end = time.time()
 
@@ -263,4 +269,4 @@ if __name__ == '__main__':
     main()
     elapsed_time = time.time() - start_time
     print('====> total time: {}h {}m {:.2f}s'.format(
-        int(elapsed_time//3600), int((elapsed_time%3600)//60), elapsed_time%60))
+        int(elapsed_time // 3600), int((elapsed_time % 3600) // 60), elapsed_time % 60))
