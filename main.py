@@ -212,8 +212,7 @@ def train(train_loader, **kwargs):
         batch_time.update(time.time() - end)
 
         if i % args.print_freq == 0:
-            progress.
-            print(i)
+            progress.print(i)
 
         end = time.time()
 
@@ -253,8 +252,7 @@ def validate(val_loader, model, criterion):
             batch_time.update(time.time() - end)
 
             if i % args.print_freq == 0:
-                progress.
-                print(i)
+                progress.print(i)
 
             end = time.time()
 

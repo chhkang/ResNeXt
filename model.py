@@ -16,15 +16,12 @@ class Block(nn.Module):
         self.shortcut.add_module('shortcut_bn', nn.BatchNorm2d(outchannel))
     def forward(self,x):
         residual = self.shortcut(x)
-
         out = self.conv1(x)
         out = F.relu(self.bn1(out), inplace=True)
-
         out = self.conv2(out)
         out = F.relu(self.bn2(out), inplace=True)
         out = self.conv3(out)
         out = self.bn3(out)
-
         return F.relu(residual+out, inplace=True)
 
 class ResNeXt(nn.Module):
